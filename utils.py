@@ -1,6 +1,7 @@
 import sys, os
 import time
 import winsound
+from datetime import datetime
 
 def play_sound():
     #winsound.PlaySound(, winsound.SND_FILENAME)
@@ -20,3 +21,14 @@ def flash_screen():
         time.sleep(1)
         print("\033[0m")
         time.sleep(1)
+
+def countdown_timer(seconds):
+    for i in range(seconds, 0, -1):
+        sys.stdout.write("\rTime remaining: {:2d} seconds".format(i))
+        sys.stdout.flush()
+        time.sleep(1)
+    print("\nTime's up!")
+    play_sound()
+    
+def today():
+    return datetime.now().strftime('%Y-%m-%d')
