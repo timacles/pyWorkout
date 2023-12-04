@@ -29,9 +29,8 @@ class Database:
             SELECT * 
             FROM workouts 
             WHERE exercise = ?
-              AND strftime('%Y-%m-%d', timestamp) = ? 
         """ 
-        self.exec(sql, (exercise, today()))
+        self.exec(sql, (exercise,))
         return self.cursor.fetchall()
     
     def exec(self, sql, params=[]):
