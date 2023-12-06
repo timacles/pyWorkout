@@ -5,11 +5,11 @@ import qdarkstyle
 
 from exercise import EXERCISES
 
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QIntValidator
 from PyQt5.QtCore import QDateTime, Qt, QTimer
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-        QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
+    QProgressBar, QPushButton, QFormLayout, QScrollBar, QSizePolicy,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
         QVBoxLayout, QWidget)
 
@@ -30,8 +30,8 @@ class WidgetGallery(QDialog):
         styleLabel.setBuddy(styleComboBox)
         styleLabel.setFont(FONT)
 
-        self.createTopLeftGroupBox()
-        self.createTopRightGroupBox()
+        self.initDataEntryGroup()
+        self.initTimerGroup()
         self.createBottomLeftTabWidget()
         self.createProgressBar()
 
@@ -55,51 +55,106 @@ class WidgetGallery(QDialog):
 
         self.setWindowTitle("Styles")
 
-
     def advanceProgressBar(self):
         curVal = self.progressBar.value()
         maxVal = self.progressBar.maximum()
         self.progressBar.setValue(curVal + (maxVal - curVal) // 100)
 
-    def createTopLeftGroupBox(self):
-        self.topLeftGroupBox = QGroupBox("Group 1")
+    def initDataEntryGroup(self):
+        self.topLeftGroupBox = QGroupBox("Enter Data")
 
-        radioButton1 = QRadioButton("Radio button 1")
-        radioButton2 = QRadioButton("Radio button 2")
-        radioButton3 = QRadioButton("Radio button 3")
-        radioButton1.setChecked(True)
+        self.promptWeight = QLineEdit()
+        self.promptWeight.setValidator(QIntValidator())
+        self.promptWeight.setMaxLength(4)
+        self.promptWeight.setAlignment(Qt.AlignRight)
+        self.promptWeight.setFont(FONT)
+        self.promptWeight.editingFinished.connect(self.enterPress)
+    
+        labelWeight = QLabel("&Weight:")
+        labelWeight.setBuddy(self.promptWeight)
+        labelWeight.setFont(FONT)
 
-        checkBox = QCheckBox("Tri-state check box")
-        checkBox.setTristate(True)
-        checkBox.setCheckState(Qt.CheckState.PartiallyChecked)
+        promptReps = QLineEdit()
+        promptReps.setValidator(QIntValidator())
+        promptReps.setMaxLength(2)
+        promptReps.setAlignment(Qt.AlignRight)
+        promptReps.setFont(FONT)
+        promptReps.editingFinished.connect(self.enterPress)
+    
+        labelReps = QLabel("&Reps:")
+        labelReps.setBuddy(self.promptWeight)
+        labelReps.setFont(FONT)
 
-        layout = QVBoxLayout()
-        layout.addWidget(radioButton1)
-        layout.addWidget(radioButton2)
-        layout.addWidget(radioButton3)
-        layout.addWidget(checkBox)
-        layout.addStretch(1)
+        layout = QFormLayout()
+        layout.addRow(labelWeight, self.promptWeight)
+        layout.addRow(labelReps, promptReps)
         self.topLeftGroupBox.setLayout(layout)
+    
+    def enterPress(self):
+        print("Enter pressed " + self.promptWeight.text())
 
-    def createTopRightGroupBox(self):
-        self.topRightGroupBox = QGroupBox("Group 2")
+    def initTimerGroup(self):
+        self.topRightGroupBox = QGroupBox("Timer")
 
-        defaultPushButton = QPushButton("Default Push Button")
-        defaultPushButton.setDefault(True)
+        bStart = QPushButton("Start")
+        bStart.setFont(FONT)
+        bStart.clicked.connect(self.start_action)
 
-        togglePushButton = QPushButton("Toggle Push Button")
-        togglePushButton.setCheckable(True)
-        togglePushButton.setChecked(True)
+        bStop = QPushButton("Stop")
+        bStop.setFont(FONT)
+        bStop.clicked.connect(self.pause_action)
 
-        flatPushButton = QPushButton("Flat Push Button")
-        flatPushButton.setFlat(True)
+        bReset = QPushButton("Reset")
+        bReset.setFont(FONT)
+        bReset.clicked.connect(self.reset_action)
+
+        self.label = QLabel("//TIMER//", self)
+        self.label.setFont(QFont('Ubuntu Mono', 50))
+        self.label.setAlignment(Qt.AlignCenter)
+        self.start = False
+        self.count = 300 
+        timer = QTimer(self)
+        timer.timeout.connect(self.showTime)
+        timer.start(100)
 
         layout = QVBoxLayout()
-        layout.addWidget(defaultPushButton)
-        layout.addWidget(togglePushButton)
-        layout.addWidget(flatPushButton)
+        layout.addWidget(bStart)
+        layout.addWidget(bStop)
+        layout.addWidget(bReset)
+        layout.addWidget(self.label)
         layout.addStretch(1)
         self.topRightGroupBox.setLayout(layout)
+
+    def showTime(self):
+        if self.start:
+            self.count -= 1
+            if self.count == 0:
+                self.start = False
+                self.label.setText("Completed !!!! ")
+        if self.start:
+            text = str(self.count / 10) + " s"
+            self.label.setText(text)
+
+    def get_seconds(self):
+        self.start = False
+        second, done = QInputDialog.getInt(self, 'Seconds', 'Enter Seconds:')
+        if done:
+            self.count = second * 10
+            self.label.setText(str(second))
+
+    def start_action(self):
+        self.start = True
+        if self.count == 0:
+            self.start = False
+ 
+    def pause_action(self):
+        self.start = False
+ 
+    def reset_action(self):
+        self.start = False
+        self.count = 300
+        self.label.setText(str(self.count))
+
 
     def createBottomLeftTabWidget(self):
         self.bottomLeftTabWidget = QTabWidget()
