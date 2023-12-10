@@ -36,3 +36,5 @@ class Database:
     def exec(self, sql, params=[]):
         self.cursor.execute(sql, params)
         self.conn.commit()
+
+
