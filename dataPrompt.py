@@ -9,28 +9,27 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
 FONT = QFont()
 FONT.setPointSize(16)  # Set the desired font size
 
-class dataPromptBox(QGroupBox):
+class DataPrompt(QGroupBox):
     def __init__(self):
         super().__init__("Data Prompt")
-        
 
         self.promptWeight = QLineEdit()
         self.promptWeight.setValidator(QIntValidator())
         self.promptWeight.setMaxLength(4)
         self.promptWeight.setAlignment(Qt.AlignRight)
         self.promptWeight.setFont(FONT)
-        #self.promptWeight.editingFinished.connect(self.enterPress)
+        self.promptWeight.editingFinished.connect(self.enterPress)
     
         labelWeight = QLabel("&Weight:")
         labelWeight.setBuddy(self.promptWeight)
         labelWeight.setFont(FONT)
 
-        promptReps = QLineEdit()
-        promptReps.setValidator(QIntValidator())
-        promptReps.setMaxLength(2)
-        promptReps.setAlignment(Qt.AlignRight)
-        promptReps.setFont(FONT)
-        #promptReps.editingFinished.connect(self.enterPress)
+        self.promptReps = QLineEdit()
+        self.promptReps.setValidator(QIntValidator())
+        self.promptReps.setMaxLength(2)
+        self.promptReps.setAlignment(Qt.AlignRight)
+        self.promptReps.setFont(FONT)
+        self.promptReps.editingFinished.connect(self.enterPress)
     
         labelReps = QLabel("&Reps:")
         labelReps.setBuddy(self.promptWeight)
@@ -38,5 +37,17 @@ class dataPromptBox(QGroupBox):
 
         layout = QFormLayout()
         layout.addRow(labelWeight, self.promptWeight)
-        layout.addRow(labelReps, promptReps)
+        layout.addRow(labelReps, self.promptReps)
         self.setLayout(layout)
+
+    def enterPress(self):
+        stats = f"Current Stats >> Weight: {self.weight} Reps: {self.reps}"
+        print(stats)
+    
+    @property
+    def weight(self):
+        return self.promptWeight.text()
+
+    @property
+    def reps(self):
+        return self.promptReps.text()

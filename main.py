@@ -1,7 +1,7 @@
 # https://wiki.python.org/moin/PyQt/Tutorials
 
-import qtDB
-from dataPrompt import dataPromptBox
+from dataPrompt import DataPrompt
+from dataTable import WorkoutTable
 
 import sys
 import qdarkstyle
@@ -19,9 +19,9 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
 FONT = QFont()
 FONT.setPointSize(16)  # Set the desired font size
 
-class WidgetGallery(QDialog):
+class WorkoutApp(QDialog):
     def __init__(self, parent=None):
-        super(WidgetGallery, self).__init__(parent)
+        super().__init__()
 
         self.originalPalette = QApplication.palette()
 
@@ -34,10 +34,10 @@ class WidgetGallery(QDialog):
         styleLabel.setFont(FONT)
 
         # Create main sections 
-        myWorkoutTable =qtDB.WorkoutTable()
-        myDataPrompt = dataPromptBox()
+        myWorkoutTable = WorkoutTable()
+        myDataPrompt = DataPrompt()
 
-        self.initDataEntryGroup()
+        #self.initDataEntryGroup()
         self.initTimerGroup()
         #self.initDataTable()
         self.createProgressBar()
@@ -67,39 +67,6 @@ class WidgetGallery(QDialog):
         maxVal = self.progressBar.maximum()
         self.progressBar.setValue(curVal + (maxVal - curVal) // 100)
 
-    def initDataEntryGroup(self):
-        self.topLeftGroupBox = QGroupBox("Enter Data")
-
-        self.promptWeight = QLineEdit()
-        self.promptWeight.setValidator(QIntValidator())
-        self.promptWeight.setMaxLength(4)
-        self.promptWeight.setAlignment(Qt.AlignRight)
-        self.promptWeight.setFont(FONT)
-        self.promptWeight.editingFinished.connect(self.enterPress)
-    
-        labelWeight = QLabel("&Weight:")
-        labelWeight.setBuddy(self.promptWeight)
-        labelWeight.setFont(FONT)
-
-        promptReps = QLineEdit()
-        promptReps.setValidator(QIntValidator())
-        promptReps.setMaxLength(2)
-        promptReps.setAlignment(Qt.AlignRight)
-        promptReps.setFont(FONT)
-        promptReps.editingFinished.connect(self.enterPress)
-    
-        labelReps = QLabel("&Reps:")
-        labelReps.setBuddy(self.promptWeight)
-        labelReps.setFont(FONT)
-
-        layout = QFormLayout()
-        layout.addRow(labelWeight, self.promptWeight)
-        layout.addRow(labelReps, promptReps)
-        self.topLeftGroupBox.setLayout(layout)
-    
-    def enterPress(self):
-        print("Enter pressed " + self.promptWeight.text())
-
     def initTimerGroup(self):
         self.topRightGroupBox = QGroupBox("Timer")
 
@@ -115,8 +82,8 @@ class WidgetGallery(QDialog):
         bReset.setFont(FONT)
         bReset.clicked.connect(self.reset_action)
 
-        self.label = QLabel("//TIMER//", self)
-        self.label.setFont(QFont('Ubuntu Mono', 50))
+        self.label = QLabel("00:00", self)
+        self.label.setFont(QFont('Arial', 50))
         self.label.setAlignment(Qt.AlignCenter)
         self.start = False
         self.count = 300 
@@ -180,7 +147,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
     app.setStyleSheet(qdarkstyle.load_stylesheet())
-    gallery = WidgetGallery()
+    gallery = WorkoutApp()
     gallery.show()
     sys.exit(app.exec())
     
