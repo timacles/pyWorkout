@@ -35,10 +35,19 @@ class DataPrompt(QGroupBox):
         labelReps.setBuddy(self.promptWeight)
         labelReps.setFont(FONT)
 
+        bInsert = QPushButton("Add +")
+        bInsert.setFont(FONT)
+        bInsert.clicked.connect(self.insertData)
+
         layout = QFormLayout()
         layout.addRow(labelWeight, self.promptWeight)
         layout.addRow(labelReps, self.promptReps)
+        layout.addRow(bInsert)
         self.setLayout(layout)
+
+    def insertData(self):
+        stats = f"Insert pressed >> Weight: {self.weight} Reps: {self.reps}"
+        print(stats)
 
     def enterPress(self):
         stats = f"Current Stats >> Weight: {self.weight} Reps: {self.reps}"

@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QTableWidget, QHeaderView, QVBoxLayout, QMessageBox, QTableView
-from PyQt5.QtSql import QSqlDatabase, QSqlQueryModel
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QWidget, QTableWidget, QHeaderView, QVBoxLayout, QMessageBox, QTableView, QTabWidget
+from PyQt5.QtSql import QSqlDatabase, QSqlQueryModel, QSqlTableModel
 
 MY_DB = 'my.db'
 W_QUERY = f"SELECT * FROM workouts ORDER BY 1 DESC"
@@ -7,7 +8,6 @@ W_QUERY = f"SELECT * FROM workouts ORDER BY 1 DESC"
 class WorkoutTable(QWidget):
     def __init__(self):
         super().__init__()
-        self.db_path = MY_DB
 
         self.db = connectDB()
 
@@ -33,6 +33,26 @@ class WorkoutTable(QWidget):
         self.db.close()
         super().closeEvent(event)
     
+
+
+
+class WorkoutTable2(QTableView):
+    def __init__(self):
+        super().__init__()
+        self.db = connectDB()
+        self.model = QSqlTableModel(self)
+        self.model.setTable("workouts")
+        self.model.setEditStrategy(QSqlTableModel.OnFieldChange)
+        #self.model.setHeaderData(0, Qt.Horizontal, "Exercise")
+        #self.model.setHeaderData(1, Qt.Horizontal, "Weight")
+        #self.model.setHeaderData(2, Qt.Horizontal, "Reps")
+        self.model.select()
+        # Set up the view
+        super().__init__()
+        self.setModel(self.model)
+        self.resizeColumnsToContents()
+
+
 def connectDB():
     con = QSqlDatabase.addDatabase("QSQLITE")
     con.setDatabaseName(MY_DB)
@@ -44,42 +64,31 @@ def connectDB():
         )
         return False
     return con
-        
 
-def TabbedWidgetExampleDataTable(self):
+
+class dataDisplay(QTabWidget):
     'This is just sample code, does not work'
-    self.bottomLeftTabWidget = QTabWidget()
-    self.bottomLeftTabWidget.setSizePolicy(QSizePolicy.Policy.Preferred,
-            QSizePolicy.Policy.Ignored)
+    def __init__(self):
+        super().__init__()
+        
+        #self.setSizePolicy(QSizePolicy.Policy.Preferred,
+        #        QSizePolicy.Policy.Ignored)
+        
+        #self.bottomLeftTabWidget = QTabWidget()
+        #self.bottomLeftTabWidget.setSizePolicy(QSizePolicy.Policy.Preferred,
+                #QSizePolicy.Policy.Ignored)
 
-    wData = qtDB.WorkoutTable()
+        table1 = WorkoutTable()
+        table2 = WorkoutTable2()
 
-    tab1 = QWidget()
-    tableWidget = QTableWidget(10, 10)
-
-    tab1hbox = QHBoxLayout()
-    tab1hbox.setContentsMargins(5, 5, 5, 5)
-    tab1hbox.addWidget(tableWidget)
-    tab1.setLayout(tab1hbox)
-
-    tab2 = QWidget()
-    textEdit = QTextEdit()
-
-    textEdit.setPlainText("TEST TEST TEST\n We'll Add something soon :)")
-
-    tab2hbox = QHBoxLayout()
-    tab2hbox.setContentsMargins(5, 5, 5, 5)
-    tab2hbox.addWidget(textEdit)
-    tab2.setLayout(tab2hbox)
-
-    self.bottomLeftTabWidget.addTab(wData, "&Current Stats")
-    self.bottomLeftTabWidget.addTab(tab2, "&Previous Stats")
+        self.addTab(table1, "&Current Stats")
+        self.addTab(table2, "&Previous Stats")
 
 
 if __name__ == "__main__":
     app = QApplication([])
 
-    window = WorkoutTable()
+    window = WorkoutTable2()
     window.show()
 
     app.exec_()
