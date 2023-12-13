@@ -1,13 +1,13 @@
 # https://wiki.python.org/moin/PyQt/Tutorials
 
 from dataPrompt import DataPrompt
-from dataTable import WorkoutTable, WorkoutTable2, dataDisplay
+from dataTable import DataDisplay 
 from timer import Timer
 
 import sys
 import qdarkstyle
 
-from exercise import EXERCISES
+from exercise import EXERCISES, ExerciseSelector
 
 from PyQt5.QtGui import QFont, QIntValidator
 from PyQt5.QtCore import QDateTime, Qt, QTimer
@@ -26,34 +26,23 @@ class WorkoutApp(QDialog):
 
         self.originalPalette = QApplication.palette()
 
-        styleComboBox = QComboBox()
-        styleComboBox.addItems(EXERCISES)
-        styleComboBox.setFont(FONT)
-
-        styleLabel = QLabel("&Exercise:")
-        styleLabel.setBuddy(styleComboBox)
-        styleLabel.setFont(FONT)
-
-        # Create main sections 
-        #myWorkoutTable = WorkoutTable2()
-        myWorkoutTable = dataDisplay()
-        myDataPrompt = DataPrompt()
+        # Main sections 
+        selector = ExerciseSelector()
+        data_display = DataDisplay()
+        data_prompt = DataPrompt()
+        data_prompt.register_selector(selector.get_value)
         timer = Timer()
 
         self.createProgressBar()
 
-        topLayout = QHBoxLayout()
-        topLayout.addWidget(styleLabel)
-        topLayout.addWidget(styleComboBox)
-        topLayout.addStretch(1)
-
         mainLayout = QGridLayout()
-        mainLayout.addLayout(topLayout, 0, 0, 1, 2)
-        mainLayout.addWidget(myDataPrompt, 1, 0)
+        mainLayout.addLayout(selector, 0, 0, 1, 2)
+        mainLayout.addWidget(data_prompt, 1, 0)
         mainLayout.addWidget(timer, 1, 1)
-        mainLayout.addWidget(myWorkoutTable, 2, 0, 1, 2)
+        mainLayout.addWidget(data_display, 2, 0, 1, 2)
         #mainLayout.addWidget(self.bottomRightGroupBox, 2, 1)
         mainLayout.addWidget(self.progressBar, 3, 0, 1, 2)
+
         mainLayout.setRowStretch(1, 1)
         mainLayout.setRowStretch(2, 1)
         mainLayout.setColumnStretch(0, 1)
