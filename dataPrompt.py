@@ -46,12 +46,16 @@ class DataPrompt(QGroupBox):
         self.setLayout(layout)
 
     def insertData(self):
-        stats = f"Insert pressed > Ex: {self.selector()} Weight: {self.weight} Reps: {self.reps}"
+        stats = f"Insert pressed > Ex: {self.exercise} Weight: {self.weight} Reps: {self.reps}"
         print(stats)
 
     def enterPress(self):
         stats = f"Current Stats > Weight: {self.weight} Reps: {self.reps}"
         print(stats)
+    
+    @property
+    def exercise(self):
+        return self.selector()
     
     @property
     def weight(self):
