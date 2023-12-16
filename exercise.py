@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List
 from screen import red
-
 from PyQt5.QtGui import QFont, QIntValidator
 from PyQt5.QtCore import QDateTime, Qt, QTimer
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
@@ -32,6 +31,10 @@ class ExerciseSelector(QHBoxLayout):
 
     def get_value(self):
         return self.options.value()
+    
+    def register_refresher(self, in_func):
+        self.options.currentIndexChanged.connect(in_func)
+
 
 class Options(QComboBox):
     def __init__(self) -> None:

@@ -1,7 +1,7 @@
 # https://wiki.python.org/moin/PyQt/Tutorials
 
 from dataPrompt import DataPrompt
-from dataTable import DataDisplay 
+from dataTable import DataDisplay, insert_data 
 from timer import Timer
 
 import sys
@@ -20,6 +20,8 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
 FONT = QFont()
 FONT.setPointSize(16)  # Set the desired font size
 
+
+
 class WorkoutApp(QDialog):
     def __init__(self):
         super().__init__()
@@ -31,6 +33,11 @@ class WorkoutApp(QDialog):
         data_display = DataDisplay()
         data_prompt = DataPrompt()
         data_prompt.register_selector(selector.get_value)
+        data_display.register_selector(selector.get_value)
+        data_prompt.register_inserter(insert_data)
+        data_prompt.register_refresher(data_display.refresh)
+        selector.register_refresher(data_display.refresh)
+        
         timer = Timer()
 
         self.createProgressBar()

@@ -18,7 +18,7 @@ class DataPrompt(QGroupBox):
         self.promptWeight.setMaxLength(4)
         self.promptWeight.setAlignment(Qt.AlignRight)
         self.promptWeight.setFont(FONT)
-        self.promptWeight.editingFinished.connect(self.enterPress)
+        #self.promptWeight.editingFinished.connect(self.enterPress)
     
         labelWeight = QLabel("&Weight:")
         labelWeight.setBuddy(self.promptWeight)
@@ -29,13 +29,13 @@ class DataPrompt(QGroupBox):
         self.promptReps.setMaxLength(2)
         self.promptReps.setAlignment(Qt.AlignRight)
         self.promptReps.setFont(FONT)
-        self.promptReps.editingFinished.connect(self.enterPress)
+        #self.promptReps.editingFinished.connect(self.enterPress)
     
         labelReps = QLabel("&Reps:")
         labelReps.setBuddy(self.promptWeight)
         labelReps.setFont(FONT)
 
-        bInsert = QPushButton("Add +")
+        bInsert = QPushButton("+++ ADD SET +++")
         bInsert.setFont(FONT)
         bInsert.clicked.connect(self.insertData)
 
@@ -47,6 +47,10 @@ class DataPrompt(QGroupBox):
 
     def insertData(self):
         stats = f"Insert pressed > Ex: {self.exercise} Weight: {self.weight} Reps: {self.reps}"
+        if self.weight == '' or self.reps == '':
+            return
+        self.inserter(self.exercise, self.weight, self.reps)
+        self.refresher()
         print(stats)
 
     def enterPress(self):
@@ -69,3 +73,9 @@ class DataPrompt(QGroupBox):
         '''Register the function which will get the 
         current exercise selection. '''
         self.selector = in_func
+
+    def register_refresher(self, in_func):
+        self.refresher = in_func
+    
+    def register_inserter(self, in_func):
+        self.inserter = in_func
