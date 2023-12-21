@@ -21,7 +21,6 @@ FONT = QFont()
 FONT.setPointSize(16)  # Set the desired font size
 
 
-
 class WorkoutApp(QDialog):
     def __init__(self):
         super().__init__()

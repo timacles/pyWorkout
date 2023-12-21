@@ -52,7 +52,6 @@ class WorkoutTableEditable(QTableView):
 
         self.setModel(self.model)
         self.setFont(FONT)
-        self.set
         self.resizeColumnsToContents()
 
     def update_filter(self, exercise):
