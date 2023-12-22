@@ -35,23 +35,27 @@ class DataPrompt(QGroupBox):
         labelReps.setBuddy(self.promptWeight)
         labelReps.setFont(FONT)
 
-        bInsert = QPushButton("+++ ADD SET +++")
-        bInsert.setFont(FONT)
-        bInsert.clicked.connect(self.insertData)
+        self.bInsert = QPushButton("+ ADD SET +")
+        self.bInsert.setFont(FONT)
+        self.bInsert.setStyleSheet("color: orange;")
+        self.bInsert.clicked.connect(self.insertData)
 
         layout = QFormLayout()
         layout.addRow(labelWeight, self.promptWeight)
         layout.addRow(labelReps, self.promptReps)
-        layout.addRow(bInsert)
+        layout.addRow(self.bInsert)
         self.setLayout(layout)
 
+    def register_timer(self, in_func):
+        self.bInsert.clicked.connect(in_func)
+
+
     def insertData(self):
-        stats = f"Insert pressed > Ex: {self.exercise} Weight: {self.weight} Reps: {self.reps}"
+        #stats = f"Insert pressed > Ex: {self.exercise} Weight: {self.weight} Reps: {self.reps}"
         if self.weight == '' or self.reps == '':
             return
         self.inserter(self.exercise, self.weight, self.reps)
         self.refresher()
-        print(stats)
 
     def enterPress(self):
         stats = f"Current Stats > Weight: {self.weight} Reps: {self.reps}"
@@ -74,7 +78,7 @@ class DataPrompt(QGroupBox):
         current exercise selection. '''
         self.selector = in_func
 
-    def register_refresher(self, in_func):
+    def register_data_table_refresher(self, in_func):
         self.refresher = in_func
     
     def register_inserter(self, in_func):

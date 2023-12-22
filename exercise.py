@@ -32,7 +32,7 @@ class ExerciseSelector(QHBoxLayout):
     def get_value(self):
         return self.options.value()
     
-    def register_refresher(self, in_func):
+    def register_data_table_refresher(self, in_func):
         self.options.currentIndexChanged.connect(in_func)
 
 

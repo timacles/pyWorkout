@@ -27,17 +27,23 @@ class WorkoutApp(QDialog):
 
         self.originalPalette = QApplication.palette()
 
-        # Main sections 
+        # ::::::::::::::::::::::::::::::::::::::::::::::
+        # Main Components
+        # ::::::::::::::::::::::::::::::::::::::::::::::
+        
         selector = ExerciseSelector()
         data_display = DataDisplay()
         data_prompt = DataPrompt()
+        timer = Timer()
+
+        # Cross register functions for events 
+        # TODO: handle more elegantly   
         data_prompt.register_selector(selector.get_value)
         data_display.register_selector(selector.get_value)
         data_prompt.register_inserter(insert_data)
-        data_prompt.register_refresher(data_display.refresh)
-        selector.register_refresher(data_display.refresh)
-        
-        timer = Timer()
+        data_prompt.register_timer(timer.reset_action)
+        data_prompt.register_data_table_refresher(data_display.refresh)
+        selector.register_data_table_refresher(data_display.refresh)
 
         self.createProgressBar()
 
@@ -53,8 +59,8 @@ class WorkoutApp(QDialog):
         mainLayout.setRowStretch(2, 1)
         mainLayout.setColumnStretch(0, 1)
         mainLayout.setColumnStretch(1, 1)
-        self.setLayout(mainLayout)
 
+        self.setLayout(mainLayout)
         self.setWindowTitle("Tim's Workout App")
 
     def advanceProgressBar(self):

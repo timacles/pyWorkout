@@ -11,11 +11,11 @@ from datetime import datetime, timedelta
 
 FONT = QFont()
 FONT.setPointSize(16)  
-DURATION = 3 * 60
+DURATION = 3 * 60 * 10
 
 class Timer(QGroupBox):
     start = False
-    count = 300 # MS
+    count = DURATION
 
     def __init__(self):
         super().__init__("Super Timer")
@@ -34,9 +34,10 @@ class Timer(QGroupBox):
         bReset.setFont(FONT)
         bReset.clicked.connect(self.reset_action)
 
-        self.label = QLabel("00:00", self)
+        self.label = QLabel(self.timer_display)
         self.label.setFont(QFont('Arial', 50))
         self.label.setAlignment(Qt.AlignCenter)
+        self.label.setStyleSheet("color: orange;")
         
 
         self.timer = QTimer(self)
@@ -64,12 +65,14 @@ class Timer(QGroupBox):
 
     @property
     def timer_display(self):
-        m = self.count // (1000 * 60)
-        remaining_milliseconds = self.count % (1000 * 60)
-        s = remaining_milliseconds // 1000
-        ms = remaining_milliseconds % 1000
-        #text = f"{self.count / 10}  s: {self.count}"
-        return f"{m}:{s}:{ms}" 
+        """Convert the MS count to a timer display
+        showing `00:00:00`
+        """
+        c = self.count
+        m = int(c / 10 / 60) 
+        s = int(c / 10) - (m * 60)
+        ms = str(c)[-1:]
+        return f"{m:0>2}:{s:0>2}:{ms:0>2}" 
 
     def start_action(self):
         self.start = True
@@ -80,10 +83,9 @@ class Timer(QGroupBox):
         self.start = False
  
     def reset_action(self):
-        self.start = False
-        self.count = 3000
-        self.label.setText(str(self.count))
-
+        #self.start = False
+        self.count = DURATION
+        self.label.setText(self.timer_display)
 
     def get_seconds(self):
         self.start = False
