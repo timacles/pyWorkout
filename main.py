@@ -9,6 +9,7 @@ import qdarkstyle
 
 from exercise import EXERCISES, ExerciseSelector
 
+
 from PyQt5.QtGui import QFont, QIntValidator
 from PyQt5.QtCore import QDateTime, Qt, QTimer
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,

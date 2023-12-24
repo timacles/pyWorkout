@@ -1,20 +1,20 @@
-from PyQt5.QtGui import QFont, QIntValidator
-from PyQt5.QtCore import QDateTime, Qt, QTimer, QTime
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
-        QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-    QProgressBar, QPushButton, QFormLayout, QScrollBar, QSizePolicy,
-        QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
-        QLCDNumber,
-        QVBoxLayout, QWidget)
+from PyQt5.QtCore import QUrl
+from PyQt5.QtMultimedia import QSoundEffect
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import (QApplication,
+        QGroupBox, QLabel,
+         QPushButton,
+        QVBoxLayout)
 
-from datetime import datetime, timedelta
 
 FONT = QFont()
 FONT.setPointSize(16)  
-DURATION = 3 * 60 * 10
+#DURATION = 3 * 60 * 10
+DURATION = 10 * 10
 
 class Timer(QGroupBox):
-    start = False
+    start = True
     count = DURATION
 
     def __init__(self):
@@ -36,9 +36,10 @@ class Timer(QGroupBox):
 
         self.label = QLabel(self.timer_display)
         self.label.setFont(QFont('Arial', 50))
-        self.label.setAlignment(Qt.AlignCenter)
+        #self.label.setAlignment(Qt.AlignCenter)
         self.label.setStyleSheet("color: orange;")
         
+        self.sounds = Sounds(self)
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.showTime)
@@ -56,18 +57,18 @@ class Timer(QGroupBox):
     def showTime(self):
         if self.start:
             self.count -= 1
-            text = f"{self.count / 10}  s: {self.count}"
             self.label.setText(self.timer_display)
-            #self.label.setText(text)
             if self.count == 0:
-                self.start = False
-                self.label.setText("00:00:00")
+                self.timeExpired()
+
+    def timeExpired(self):
+        self.start = False
+        self.label.setText("00:00:00")
+        self.sounds.gameover()
 
     @property
     def timer_display(self):
-        """Convert the MS count to a timer display
-        showing `00:00:00`
-        """
+        """Convert the MS count to a timer display showing `00:00:00` """
         c = self.count
         m = int(c / 10 / 60) 
         s = int(c / 10) - (m * 60)
@@ -87,19 +88,29 @@ class Timer(QGroupBox):
         self.count = DURATION
         self.label.setText(self.timer_display)
 
-    def get_seconds(self):
-        self.start = False
-        second, done = QInputDialog.getInt(self, 'Seconds', 'Enter Seconds:')
-        if done:
-            self.label.setText(str(second))
             
-class TimerDisplay(QLabel):
-    def __init__(self, duration) -> None:
-        super().__init__(self.current )
+class Sounds:
+    wav_gameover = 'sounds/gameover.wav'
+    wav_itemopen = 'sounds/itemopen.wav'
+    wav_itemused = 'sounds/itemused.wav'
 
-    def start(self):
-        self.t_start = datetime.now().time()
+    def __init__(self, parent=None):
 
-    @property
-    def current(self):
-        return f""
+        self.sound_gameover = QSoundEffect(parent)
+        self.sound_gameover.setSource(QUrl.fromLocalFile(self.wav_gameover))
+
+        self.sound_itemused = QSoundEffect(parent)
+        self.sound_itemused.setSource(QUrl.fromLocalFile(self.wav_itemused))
+
+    def gameover(self):
+        self.sound_gameover.play()
+
+    def itemused(self):
+        self.sound_itemused.play()
+
+
+
+
+
+if __name__ == "__main__":
+    Sounds.sound_gameover.play()
