@@ -38,7 +38,8 @@ class DataPrompt(QGroupBox):
         self.bInsert = QPushButton("+ ADD SET +")
         self.bInsert.setFont(FONT)
         self.bInsert.setStyleSheet("color: orange;")
-        self.bInsert.clicked.connect(self.insertData)
+        self.bInsert.setStyleSheet("background-color: purple")
+        self.bInsert.clicked.connect(self.addSet_button_pressed)
 
         layout = QFormLayout()
         layout.addRow(labelWeight, self.promptWeight)
@@ -46,32 +47,24 @@ class DataPrompt(QGroupBox):
         layout.addRow(self.bInsert)
         self.setLayout(layout)
 
-    def register_timer(self, in_func):
-        self.bInsert.clicked.connect(in_func)
 
 
-    def insertData(self):
-        #stats = f"Insert pressed > Ex: {self.exercise} Weight: {self.weight} Reps: {self.reps}"
+    def addSet_button_pressed(self):
+        "Events on ADD SET Button click"
+       
+        # do nothing if either value is empty 
         if self.weight == '' or self.reps == '':
             return
+
         self.inserter(self.exercise, self.weight, self.reps)
         self.refresher()
+        self.sound_end()
+        self.timer_reset()
 
     def enterPress(self):
         stats = f"Current Stats > Weight: {self.weight} Reps: {self.reps}"
         print(stats)
     
-    @property
-    def exercise(self):
-        return self.selector()
-    
-    @property
-    def weight(self):
-        return self.promptWeight.text()
-
-    @property
-    def reps(self):
-        return self.promptReps.text()
     
     def register_selector(self, in_func):
         '''Register the function which will get the 
@@ -83,3 +76,23 @@ class DataPrompt(QGroupBox):
     
     def register_inserter(self, in_func):
         self.inserter = in_func
+
+    def register_sound_end(self, in_func):
+        self.sound_end = in_func
+
+    def register_timer(self, in_func):
+        self.timer_reset = in_func
+        self.bInsert.clicked.connect(in_func)
+
+
+    @property
+    def exercise(self):
+        return self.selector()
+    
+    @property
+    def weight(self):
+        return self.promptWeight.text()
+
+    @property
+    def reps(self):
+        return self.promptReps.text()

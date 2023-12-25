@@ -3,20 +3,15 @@
 from dataPrompt import DataPrompt
 from dataTable import DataDisplay, insert_data 
 from timer import Timer
+from exercise import ExerciseSelector
 
 import sys
 import qdarkstyle
 
-from exercise import EXERCISES, ExerciseSelector
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import (QApplication, QDialog, QGridLayout, QProgressBar)
 
-
-from PyQt5.QtGui import QFont, QIntValidator
-from PyQt5.QtCore import QDateTime, Qt, QTimer
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
-        QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-    QProgressBar, QPushButton, QFormLayout, QScrollBar, QSizePolicy,
-        QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
-        QVBoxLayout, QWidget)
 
 FONT = QFont()
 FONT.setPointSize(16)  # Set the desired font size
@@ -37,14 +32,21 @@ class WorkoutApp(QDialog):
         data_prompt = DataPrompt()
         timer = Timer()
 
+        ################################################
         # Cross register functions for events 
         # TODO: handle more elegantly   
-        data_prompt.register_selector(selector.get_value)
-        data_display.register_selector(selector.get_value)
+        ################################################
+
         data_prompt.register_inserter(insert_data)
         data_prompt.register_timer(timer.reset_action)
         data_prompt.register_data_table_refresher(data_display.refresh)
+        data_prompt.register_sound_end(timer.sounds.itemused)
+        data_prompt.register_selector(selector.get_value)
+
+        data_display.register_selector(selector.get_value)
         selector.register_data_table_refresher(data_display.refresh)
+
+        ################################################
 
         self.createProgressBar()
 

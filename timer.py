@@ -2,10 +2,7 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimedia import QSoundEffect
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import (QApplication,
-        QGroupBox, QLabel,
-         QPushButton,
-        QVBoxLayout)
+from PyQt5.QtWidgets import ( QGroupBox, QLabel, QPushButton, QVBoxLayout)
 
 
 FONT = QFont()
@@ -18,7 +15,7 @@ class Timer(QGroupBox):
     count = DURATION
 
     def __init__(self):
-        super().__init__("Super Timer")
+        super().__init__("Super Serious Timer")
         self.initWidget()
         
     def initWidget(self):
@@ -84,7 +81,7 @@ class Timer(QGroupBox):
         self.start = False
  
     def reset_action(self):
-        #self.start = False
+        self.start = True
         self.count = DURATION
         self.label.setText(self.timer_display)
 
@@ -95,22 +92,30 @@ class Sounds:
     wav_itemused = 'sounds/itemused.wav'
 
     def __init__(self, parent=None):
+        self.parent = parent
 
-        self.sound_gameover = QSoundEffect(parent)
-        self.sound_gameover.setSource(QUrl.fromLocalFile(self.wav_gameover))
+        # iterate over class attributes
+        sounds = [k for k in Sounds.__dict__.keys() if k.startswith('wav_')]
 
-        self.sound_itemused = QSoundEffect(parent)
-        self.sound_itemused.setSource(QUrl.fromLocalFile(self.wav_itemused))
+        for sound in sounds:
+            self.create_sounds_attr(sound)
 
-    def gameover(self):
-        self.sound_gameover.play()
+    def create_sounds_attr(self, name: str):
+        """Create attributes for class with all necessarry components.
 
-    def itemused(self):
-        self.sound_itemused.play()
+        Registers the play() sound function to the sound name.
+        """
 
+        path = Sounds.__dict__.get(name)
+        sound_name = name.strip("wav_")
+        sound_class_name = "_" + sound_name
 
+        sound = QSoundEffect(self.parent)
+        sound.setSource(QUrl.fromLocalFile(path))
 
+        setattr(self, sound_class_name, sound)
+        setattr(self, sound_name, sound.play) 
 
 
 if __name__ == "__main__":
-    Sounds.sound_gameover.play()
+    Sounds.gameover.play()
