@@ -1,6 +1,9 @@
-from PyQt5.QtGui import QFont, QIntValidator
+from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QTableWidget, QHeaderView, QVBoxLayout, QMessageBox, QTableView, QTabWidget, QSizePolicy
+from PyQt5.QtWidgets import (QApplication, QWidget, 
+    QVBoxLayout, QHBoxLayout, QPushButton,
+    QMessageBox,
+    QTableView, QTabWidget, QSizePolicy)
 from PyQt5.QtSql import QSqlDatabase, QSqlQueryModel, QSqlTableModel, QSqlQuery
 
 MY_DB = 'workouts.db'
@@ -11,11 +14,12 @@ WORKOUT_QUERY = """
     WHERE exercise = '{}'
     ORDER BY 1 DESC
 """
+
 FONT = QFont()
 FONT.setPointSize(16)  # Set the desired font size
 
 
-class WorkoutTable(QWidget):
+class CurrentWorkout(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -39,6 +43,33 @@ class WorkoutTable(QWidget):
         super().closeEvent(event)
         
        
+class PreviousWorkout(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.sqlTable = WorkoutTableEditable()
+
+        buttonLayout = QHBoxLayout()
+
+        self.delButton = QPushButton("Delete Row")
+        self.delButton.setFont(FONT)
+        self.delButton.clicked.connect(self.delete_row)
+
+        buttonLayout.addWidget(self.delButton)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.sqlTable)
+        layout.addLayout(buttonLayout)
+
+        self.setLayout(layout)
+
+    def delete_row(self):
+        raise NotImplementedError("DELETE DONT WORK YET FOO")
+
+    def refresh(self, exercise):
+        self.sqlTable.refresh(exercise)
+
+
 
 class WorkoutTableEditable(QTableView):
     def __init__(self):
@@ -65,6 +96,16 @@ class WorkoutTableEditable(QTableView):
         self.setModel(self.model)
         self.resizeColumnsToContents()
 
+    def deleteRow(self):
+        #TODO 
+        row = self.model.currentRow()
+
+        currentproductid = (self.products_table.item(row, 0).text() )
+        product_name = (self.products_table.item(row, 1).text() )
+        query = session.query(Product).filter(Product.product_id==str(currentproductid)).first()
+        session.delete(query)
+        session.commit()
+        self.products_table.removeRow(row)
 
 class DataDisplay(QTabWidget):
     'Tabs with the database tables'
@@ -76,20 +117,25 @@ class DataDisplay(QTabWidget):
                 QSizePolicy.Policy.Ignored)
         self.setFont(FONT)
         
-        self.table1 = WorkoutTable()
-        self.table2 = WorkoutTableEditable()
+        self.current_workout = CurrentWorkout()
+        self.previous_workout = PreviousWorkout()
 
-        self.addTab(self.table1, "&Current Lift")
-        self.addTab(self.table2, "&Previous Stats")
+        self.addTab(self.current_workout, "&Current")
+        self.addTab(self.previous_workout, "&Previous")
     
     def register_selector(self, in_func):
         self.selector = in_func
 
     def refresh(self):
         exercise = self.selector()
-        self.table1.refresh(exercise)
-        self.table2.refresh(exercise)
+        self.current_workout.refresh(exercise)
+        self.previous_workout.refresh(exercise)
     
+
+
+
+
+
 
 def connectDB():
     con = QSqlDatabase.addDatabase("QSQLITE")
@@ -103,6 +149,8 @@ def connectDB():
         return False
     return con
  
+
+
 def insert_data(exercise, weight, reps):
     # Insert data into the table
     query = QSqlQuery()

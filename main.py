@@ -56,7 +56,7 @@ class WorkoutApp(QDialog):
         mainLayout.addWidget(timer, 1, 1)
         mainLayout.addWidget(data_display, 2, 0, 1, 2)
         #mainLayout.addWidget(self.bottomRightGroupBox, 2, 1)
-        mainLayout.addWidget(self.progressBar, 3, 0, 1, 2)
+        #mainLayout.addWidget(self.progressBar, 3, 0, 1, 2)
 
         mainLayout.setRowStretch(1, 1)
         mainLayout.setRowStretch(2, 1)
@@ -64,7 +64,9 @@ class WorkoutApp(QDialog):
         mainLayout.setColumnStretch(1, 1)
 
         self.setLayout(mainLayout)
+        self.resize(1900, 1600)  # TODO: Make this a % of screen 
         self.setWindowTitle("Tim's Workout App")
+
 
     def advanceProgressBar(self):
         curVal = self.progressBar.value()
