@@ -6,12 +6,15 @@ from PyQt5.QtWidgets import (QApplication, QWidget,
     QTableView, QTabWidget, QSizePolicy)
 from PyQt5.QtSql import QSqlDatabase, QSqlQueryModel, QSqlTableModel, QSqlQuery
 
+from sounds import Sounds 
+
 MY_DB = 'workouts.db'
 
 WORKOUT_QUERY = """
     SELECT exercise, weight, reps
     FROM workouts 
     WHERE exercise = '{}'
+      AND DATE(timestamp) = DATE('now')
     ORDER BY 1 DESC
 """
 
@@ -28,25 +31,32 @@ class CurrentWorkout(QWidget):
         self.table.setFont(FONT)
 
         self.model = QSqlQueryModel()
-        self.refresh("deadlift")
+        #self.refresh("deadlift")
         self.table.setModel(self.model)
 
         layout = QVBoxLayout()
         layout.addWidget(self.table)
         self.setLayout(layout)
-        
-    def refresh(self, exercise):
-        self.model.setQuery(WORKOUT_QUERY.format(exercise))
 
     def closeEvent(self, event):
         self.db.close()
         super().closeEvent(event)
         
+    def register_exercise(self, in_func):
+        self._exercise = in_func
+
+    @property
+    def exercise(self):
+        return self._exercise()
        
+    def refresh(self):
+        self.model.setQuery(WORKOUT_QUERY.format(self.exercise))
+
 class PreviousWorkout(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.sounds = Sounds()
         self.sqlTable = WorkoutTableEditable()
 
         buttonLayout = QHBoxLayout()
@@ -64,12 +74,20 @@ class PreviousWorkout(QWidget):
         self.setLayout(layout)
 
     def delete_row(self):
-        raise NotImplementedError("DELETE DONT WORK YET FOO")
+        self.sqlTable.delete_row()
+        self.sounds.delete()
 
-    def refresh(self, exercise):
-        self.sqlTable.refresh(exercise)
+    def refresh(self):
+        self.sqlTable.refresh()
 
+    def register_exercise(self, in_func):
+        self._exercise = in_func
+        self.sqlTable.register_exercise(in_func)
 
+    @property
+    def exercise(self):
+        return self._exercise()
+ 
 
 class WorkoutTableEditable(QTableView):
     def __init__(self):
@@ -85,24 +103,36 @@ class WorkoutTableEditable(QTableView):
         self.setFont(FONT)
         self.resizeColumnsToContents()
 
-    def update_filter(self, exercise):
-        self.model.setFilter(f"exercise = '{exercise}'")
+    def delete_row(self):
+        indices = self.selectionModel().selectedIndexes()
+
+        for idx in indices:
+            r = idx.row()
+            self.model.removeRow(r)
+
+        self.refresh()
+
+    def register_exercise(self, in_func):
+        self._exercise = in_func
+
+    @property
+    def exercise(self):
+        return self._exercise()
+
+    def update_filter(self):
+        self.model.setFilter(f"exercise = '{self.exercise}'")
         self.setModel(self.model)
         self.resizeColumnsToContents()
 
-    def refresh(self, exercise):
-        self.model.setFilter(f"exercise = '{exercise}'")
+    def refresh(self):
+        'refresh the table view with latest data'
+        self.model.setFilter(f"exercise = '{self.exercise}'")
         self.model.select()
         self.setModel(self.model)
         self.resizeColumnsToContents()
 
     def deleteRow(self):
         #TODO 
-        row = self.model.currentRow()
-
-        currentproductid = (self.products_table.item(row, 0).text() )
-        product_name = (self.products_table.item(row, 1).text() )
-        query = session.query(Product).filter(Product.product_id==str(currentproductid)).first()
         session.delete(query)
         session.commit()
         self.products_table.removeRow(row)
@@ -123,13 +153,13 @@ class DataDisplay(QTabWidget):
         self.addTab(self.current_workout, "&Current")
         self.addTab(self.previous_workout, "&Previous")
     
-    def register_selector(self, in_func):
-        self.selector = in_func
+    def register_exercise(self, in_func):
+        self.current_workout.register_exercise(in_func)
+        self.previous_workout.register_exercise(in_func)
 
     def refresh(self):
-        exercise = self.selector()
-        self.current_workout.refresh(exercise)
-        self.previous_workout.refresh(exercise)
+        self.current_workout.refresh()
+        self.previous_workout.refresh()
     
 
 

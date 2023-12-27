@@ -65,11 +65,10 @@ class DataPrompt(QGroupBox):
         stats = f"Current Stats > Weight: {self.weight} Reps: {self.reps}"
         print(stats)
     
-    
-    def register_selector(self, in_func):
+    def register_exercise(self, in_func):
         '''Register the function which will get the 
         current exercise selection. '''
-        self.selector = in_func
+        self.current_exercise = in_func
 
     def register_data_table_refresher(self, in_func):
         self.refresher = in_func
@@ -84,10 +83,9 @@ class DataPrompt(QGroupBox):
         self.timer_reset = in_func
         self.bInsert.clicked.connect(in_func)
 
-
     @property
     def exercise(self):
-        return self.selector()
+        return self.current_exercise()
     
     @property
     def weight(self):

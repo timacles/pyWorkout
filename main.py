@@ -27,7 +27,7 @@ class WorkoutApp(QDialog):
         # Main Components
         # ::::::::::::::::::::::::::::::::::::::::::::::
         
-        selector = ExerciseSelector()
+        exercise_menu = ExerciseSelector()
         data_display = DataDisplay()
         data_prompt = DataPrompt()
         timer = Timer()
@@ -41,17 +41,18 @@ class WorkoutApp(QDialog):
         data_prompt.register_timer(timer.reset_action)
         data_prompt.register_data_table_refresher(data_display.refresh)
         data_prompt.register_sound_end(timer.sounds.itemused)
-        data_prompt.register_selector(selector.get_value)
+        data_prompt.register_exercise(exercise_menu.get_value)
 
-        data_display.register_selector(selector.get_value)
-        selector.register_data_table_refresher(data_display.refresh)
+        data_display.register_exercise(exercise_menu.get_value)
+        data_display.refresh()
+        exercise_menu.register_data_table_refresher(data_display.refresh)
 
         ################################################
 
         self.createProgressBar()
 
         mainLayout = QGridLayout()
-        mainLayout.addLayout(selector, 0, 0, 1, 2)
+        mainLayout.addLayout(exercise_menu, 0, 0, 1, 2)
         mainLayout.addWidget(data_prompt, 1, 0)
         mainLayout.addWidget(timer, 1, 1)
         mainLayout.addWidget(data_display, 2, 0, 1, 2)

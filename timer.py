@@ -1,8 +1,8 @@
-from PyQt5.QtCore import QUrl
-from PyQt5.QtMultimedia import QSoundEffect
 from PyQt5.QtGui import QFont
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtWidgets import ( QGroupBox, QLabel, QPushButton, QVBoxLayout)
+
+from sounds import Sounds
 
 
 FONT = QFont()
@@ -33,7 +33,6 @@ class Timer(QGroupBox):
 
         self.label = QLabel(self.timer_display)
         self.label.setFont(QFont('Arial', 50))
-        #self.label.setAlignment(Qt.AlignCenter)
         self.label.setStyleSheet("color: orange;")
         
         self.sounds = Sounds(self)
@@ -47,6 +46,7 @@ class Timer(QGroupBox):
         layout.addWidget(bStop)
         layout.addWidget(bReset)
         layout.addWidget(self.label)
+        layout.setAlignment(self.label, Qt.AlignCenter)
         layout.addStretch(1)
         self.setLayout(layout)
 
@@ -86,35 +86,6 @@ class Timer(QGroupBox):
         self.label.setText(self.timer_display)
 
             
-class Sounds:
-    wav_gameover = 'sounds/gameover.wav'
-    wav_itemopen = 'sounds/itemopen.wav'
-    wav_itemused = 'sounds/itemused.wav'
-
-    def __init__(self, parent=None):
-        self.parent = parent
-
-        # iterate over class attributes
-        sounds = [k for k in Sounds.__dict__.keys() if k.startswith('wav_')]
-
-        for sound in sounds:
-            self.create_sounds_attr(sound)
-
-    def create_sounds_attr(self, name: str):
-        """Create attributes for class with all necessarry components.
-
-        Registers the play() sound function to the sound name.
-        """
-
-        path = Sounds.__dict__.get(name)
-        sound_name = name.strip("wav_")
-        sound_class_name = "_" + sound_name
-
-        sound = QSoundEffect(self.parent)
-        sound.setSource(QUrl.fromLocalFile(path))
-
-        setattr(self, sound_class_name, sound)
-        setattr(self, sound_name, sound.play) 
 
 
 if __name__ == "__main__":

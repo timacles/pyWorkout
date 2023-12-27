@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List
 from screen import red
+from sounds import Sounds
 from PyQt5.QtGui import QFont, QIntValidator
 from PyQt5.QtCore import QDateTime, Qt, QTimer
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
@@ -20,6 +21,7 @@ class ExerciseSelector(QHBoxLayout):
         super().__init__()
         
         self.options = Options()
+        self.sounds = Sounds()
 
         text = QLabel("&Exercise:")
         text.setBuddy(self.options)
@@ -33,7 +35,10 @@ class ExerciseSelector(QHBoxLayout):
         return self.options.value()
     
     def register_data_table_refresher(self, in_func):
-        self.options.currentIndexChanged.connect(in_func)
+        def f():
+            in_func()
+            self.sounds.select()
+        self.options.currentIndexChanged.connect(f)
 
 
 class Options(QComboBox):
