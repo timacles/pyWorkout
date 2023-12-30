@@ -29,6 +29,7 @@ class ExerciseSelector(QHBoxLayout):
 
         self.addWidget(text)
         self.addWidget(self.options)
+        self.setAlignment(self.options, Qt.AlignCenter)
         self.addStretch(1)
 
     def get_value(self):
@@ -46,6 +47,15 @@ class Options(QComboBox):
         super().__init__()
         self.addItems(EXERCISES)
         self.setFont(FONT)
+        self.setStyleSheet(
+                        "QComboBox"
+                        "{"
+                        #"border : solid yellow;"
+                        "}"
+                        "QComboBox::down-arrow"
+                        "{"
+                        "border : solid black;"
+                        "}") 
     
     def value(self):
         ##return self.itemData(self.currentIndex())

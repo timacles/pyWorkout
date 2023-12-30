@@ -7,8 +7,8 @@ from sounds import Sounds
 
 FONT = QFont()
 FONT.setPointSize(16)  
-#DURATION = 3 * 60 * 10
-DURATION = 10 * 10
+DURATION = 3 * 60 * 10
+#DURATION = 10 * 10
 
 class Timer(QGroupBox):
     start = True

@@ -60,6 +60,11 @@ class DataPrompt(QGroupBox):
         self.refresher()
         self.sound_end()
         self.timer_reset()
+        self.display_reset()
+
+    def display_reset(self):
+        self.promptReps.setText("")
+        self.promptWeight.setText("")
 
     def enterPress(self):
         stats = f"Current Stats > Weight: {self.weight} Reps: {self.reps}"

@@ -8,6 +8,7 @@ from PyQt5.QtSql import QSqlDatabase, QSqlQueryModel, QSqlTableModel, QSqlQuery
 
 from sounds import Sounds 
 
+FAKEMY_DB = 'workouts.db'
 MY_DB = 'workouts.db'
 
 WORKOUT_QUERY = """
